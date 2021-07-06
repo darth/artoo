@@ -1,6 +1,6 @@
 const socket = io();
 socket.on("voice", function (msg) {
-  var sound = document.createElement("audio");
+  const sound = document.createElement("audio");
   sound.id = "sound";
   sound.src = "sounds/" + msg;
   sound.type = "audio/mpeg";

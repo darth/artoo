@@ -554,34 +554,69 @@ if (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') {
 exports.default = LinkedList;
 
 },{}],5:[function(require,module,exports){
-const WaitQueue = require("wait-queue");
+"use strict";
 
-const wq = new WaitQueue();
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
-const handle = async msg => {
-  const div = document.getElementById("alert");
-  const img = document.getElementById("img");
-  const text = document.getElementById("text");
-  img.src = "pics/" + msg.img;
-  text.textContent = msg.text;
-  div.style.display = "flex";
-  const sound = document.createElement("audio");
-  sound.id = "sound";
-  sound.src = "sounds/" + msg.sound;
-  sound.type = "audio/mpeg";
-  sound.autoplay = true;
-  div.appendChild(sound);
-  setTimeout(async () => {
-    div.style.display = "none";
-    div.removeChild(sound);
-    setTimeout(() => {
-      wq.shift().then(handle);
-    }, msg.pause * 1000);
-  }, msg.duration * 1000);
-};
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var WaitQueue = require("wait-queue");
+
+var wq = new WaitQueue();
+
+var handle = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(msg) {
+    var div, img, text, sound;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            div = document.getElementById("alert");
+            img = document.getElementById("img");
+            text = document.getElementById("text");
+            img.src = "pics/" + msg.img;
+            text.textContent = msg.text;
+            div.style.display = "flex";
+            sound = document.createElement("audio");
+            sound.id = "sound";
+            sound.src = "sounds/" + msg.sound;
+            sound.type = "audio/mpeg";
+            sound.autoplay = true;
+            div.appendChild(sound);
+            setTimeout( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+              return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                  switch (_context.prev = _context.next) {
+                    case 0:
+                      div.style.display = "none";
+                      div.removeChild(sound);
+                      setTimeout(function () {
+                        wq.shift().then(handle);
+                      }, msg.pause * 1000);
+
+                    case 3:
+                    case "end":
+                      return _context.stop();
+                  }
+                }
+              }, _callee);
+            })), msg.duration * 1000);
+
+          case 13:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function handle(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
 
 wq.shift().then(handle);
-const socket = io();
+var socket = io();
 socket.on("alert", function (msg) {
   wq.push(msg);
 });
