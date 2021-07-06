@@ -1,4 +1,6 @@
-const WaitQueue = require("wait-queue");
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+import WaitQueue from 'wait-queue';
 const wq = new WaitQueue();
 const handle = async (msg) => {
   const div = document.getElementById("alert");
