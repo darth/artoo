@@ -106,9 +106,11 @@ const run = async () => {
     new ReverseProxyAdapter({
       hostName: config.hooks.server.host,
       pathPrefix: config.hooks.server.prefix,
+      port: config.hooks.server.port,
+      externalPort: config.hooks.server.external_port,
     })
   );
-  await listener.listen(config.hooks.server.port);
+  await listener.listen();
   if (config.telegram.enable) {
     const onlineSubscription = await listener.subscribeToStreamOnlineEvents(
       config.twitch.channel.id,
