@@ -17,6 +17,7 @@
     "twitch-chat-client": "~4.4",
     "twitch-eventsub": "~4.4",
     "twitch-webhooks": "~4.4",
+    "twitch-api-call": "~4.4",
     "wait-queue": "^1.1.4"
   },
   "author": "Vadim Alimguzhin",
