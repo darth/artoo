@@ -39,7 +39,7 @@ const readYaml = (path, desc) => {
 };
 
 const config = readYaml("config.yaml", "configuration file");
-const commands = new Keyv("commands.db");
+const commands = new Keyv("sqlite://commands.db");
 
 const run = async () => {
   const tg = new TelegramBot(config.telegram.auth, { polling: true });
@@ -71,7 +71,7 @@ const run = async () => {
     const arr = message.slice(1).split(" ");
     const cmdText = arr[0];
     const cmdArgs = arr.slice(1);
-    const cmd = commands.get(cmdText);
+    const cmd = await commands.get(cmdText);
     if (cmd) {
       const stream = await clientSimple.helix.streams.getStreamByUserName(
         channelName.substring(1)
