@@ -4,7 +4,9 @@
   "main": "main.js",
   "license": "MIT",
   "dependencies": {
+    "@keyv/sqlite": "^2.0.2",
     "js-yaml": "^4.0.0",
+    "keyv": "^4.0.3",
     "lodash": "^4.17.20",
     "node-static": "^0.7.11",
     "node-telegram-bot-api": "^0.51.0",

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const yaml = require("js-yaml");
+const Keyv = require("keyv");
 const { ApiClient } = require("twitch");
 const {
   StaticAuthProvider,
@@ -38,7 +39,7 @@ const readYaml = (path, desc) => {
 };
 
 const config = readYaml("config.yaml", "configuration file");
-const commands = readYaml("commands.yaml", "file with commands");
+const commands = new Keyv("commands.db");
 
 const run = async () => {
   const tg = new TelegramBot(config.telegram.auth, { polling: true });
@@ -70,8 +71,8 @@ const run = async () => {
     const arr = message.slice(1).split(" ");
     const cmdText = arr[0];
     const cmdArgs = arr.slice(1);
-    if (cmdText in commands) {
-      const cmd = commands[cmdText];
+    const cmd = commands.get(cmdText);
+    if (cmd) {
       const stream = await clientSimple.helix.streams.getStreamByUserName(
         channelName.substring(1)
       );
@@ -90,13 +91,6 @@ const run = async () => {
           );
         }
       }
-    } else if (cmdText === "help") {
-      await chat.say(
-        channelName,
-        `Available commands: ${Object.keys(commands)
-          .map((c) => config.prefix + c)
-          .join(", ")}`
-      );
     } else {
       await chat.say(channelName, "Sorry, I don't know such command!");
     }
