@@ -10,5 +10,5 @@ module.exports = async (context, type, ...text) => {
     value = game.id;
   }
   info[type] = value;
-  context.client.helix.channels.updateChannelInfo(channel.id, info);
+  context.client.helix.channels.updateChannelInfo(context.channel.id, info);
 };
