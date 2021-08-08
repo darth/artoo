@@ -1,5 +1,5 @@
-module.exports = async (chat, client, channel, ...args) => {
+module.exports = async (context, ...args) => {
   for (const arg of args) {
-    await chat.say(channel.displayName, arg);
+    await context.chat.say(context.channel.displayName, arg);
   }
 };

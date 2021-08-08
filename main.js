@@ -83,9 +83,11 @@ const run = async () => {
           msg.userInfo.isMod
         ) {
           await handlers[cmd.handler](
-            chat,
-            clientSimple,
-            channel,
+            {
+              chat,
+              channel,
+              client: clientSimple,
+            },
             ...cmd.args,
             ...cmdArgs
           );
