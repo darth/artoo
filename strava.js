@@ -26,7 +26,7 @@ module.exports = async (context, ...args) => {
   };
   await context.chat.say(
     context.channel.displayName,
-    "Annie is running!"
+    "Annie runs!"
   );
   await context.chat.say(
     context.channel.displayName,
