@@ -1,5 +1,5 @@
 const www = require("./www.js");
 
-module.exports = async (chat, client, channel, name) => {
+module.exports = async (context, name) => {
   await www.enqueue("voice", name);
 };

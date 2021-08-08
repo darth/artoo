@@ -10,6 +10,9 @@ const { ChatClient } = require("twitch-chat-client");
 const { WebHookListener, SimpleAdapter } = require("twitch-webhooks");
 const { EventSubListener, ReverseProxyAdapter } = require("twitch-eventsub");
 const TelegramBot = require("node-telegram-bot-api");
+const Strava = require("strava-v3");
+const dayjs = require("dayjs");
+require("dayjs/locale/it");
 
 const www = require("./www.js");
 
@@ -18,6 +21,7 @@ const handlers = {
   voice: require("./voice.js"),
   music: require("./music.js"),
   text: require("./text.js"),
+  strava: require("./strava.js"),
 };
 
 const readYaml = (path, desc) => {
@@ -33,16 +37,44 @@ const readYaml = (path, desc) => {
     parsed = yaml.load(data);
   } catch (err) {
     console.error(`Malformed ${desc}!`);
-    process.exit();
+    process.exit(1);
   }
   return parsed;
+};
+
+const writeYaml = (path, data) => {
+  try {
+    fs.writeFileSync(path, yaml.dump(data));
+  } catch (err) {
+    console.error(`Cannot write YAML file ${path}!`);
+    process.exit(1);
+  }
 };
 
 const config = readYaml("config.yaml", "configuration file");
 const commands = new Keyv("sqlite://commands.db");
 
+dayjs.locale("it");
+
+const refreshStrava = async () => {
+  const payload = await Strava.oauth.refreshToken(
+    config.strava.auth.tokens.refresh
+  );
+  config.strava.auth.tokens.auth = payload.access_token;
+  config.strava.auth.tokens.refresh = payload.refresh_token;
+  setTimeout(() => {
+    refreshStrava();
+  }, payload.expires_in - 3600 * 1000);
+}
+
 const run = async () => {
   const tg = new TelegramBot(config.telegram.auth, { polling: true });
+  Strava.config({
+    access_token: config.strava.auth.tokens.access,
+    client_id: config.strava.auth.client_id,
+    client_secret: config.strava.auth.client_secret,
+  });
+  await refreshStrava();
   const simpleUserAuth = new StaticAuthProvider(
     config.twitch.auth.client_id,
     config.twitch.auth.tokens.user
@@ -76,16 +108,23 @@ const run = async () => {
       const stream = await clientSimple.helix.streams.getStreamByUserName(
         channelName.substring(1)
       );
-      if (!cmd.online || stream) {
+      if (cmd.online && !stream) {
+        chat.say(channelName, "Stream is offline.");
+      } else {
         if (
-          !cmd.privileged ||
-          msg.userInfo.isBroadcaster ||
+          cmd.privileged &&
+          !msg.userInfo.isBroadcaster &&
           msg.userInfo.isMod
         ) {
+          chat.say(channelName, "Sorry, you are not authorized.");
+        } else {
           await handlers[cmd.handler](
-            chat,
-            clientSimple,
-            channel,
+            {
+              chat,
+              channel,
+              client: clientSimple,
+              strava: new Strava.client(config.strava.auth.tokens.access),
+            },
             ...cmd.args,
             ...cmdArgs
           );
@@ -149,5 +188,10 @@ https://twitch.tv/${config.twitch.channel.name}`
     });
   }, 5000);
 };
+
+process.on("SIGTERM", () => {
+  writeYaml("config.yaml", config);
+  process.exit(0);
+});
 
 run();
