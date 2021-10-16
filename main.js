@@ -61,12 +61,12 @@ const refreshStrava = async () => {
   const payload = await Strava.oauth.refreshToken(
     config.strava.auth.tokens.refresh
   );
-  config.strava.auth.tokens.auth = payload.access_token;
+  config.strava.auth.tokens.access = payload.access_token;
   config.strava.auth.tokens.refresh = payload.refresh_token;
   setTimeout(() => {
     refreshStrava();
-  }, payload.expires_in - 3600 * 1000);
-};
+  }, payload.expires_in * 1000 - 3600 * 1000);
+}
 
 const run = async () => {
   const tg = new TelegramBot(config.telegram.auth, { polling: true });
