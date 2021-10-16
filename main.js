@@ -21,6 +21,7 @@ const handlers = {
   voice: require("./voice.js"),
   music: require("./music.js"),
   text: require("./text.js"),
+  update: require("./update.js"),
   strava: require("./strava.js"),
 };
 
@@ -65,7 +66,7 @@ const refreshStrava = async () => {
   setTimeout(() => {
     refreshStrava();
   }, payload.expires_in - 3600 * 1000);
-}
+};
 
 const run = async () => {
   const tg = new TelegramBot(config.telegram.auth, { polling: true });
@@ -124,6 +125,7 @@ const run = async () => {
               channel,
               client: clientSimple,
               strava: new Strava.client(config.strava.auth.tokens.access),
+              commands,
             },
             ...cmd.args,
             ...cmdArgs
