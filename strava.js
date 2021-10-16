@@ -9,6 +9,7 @@ module.exports = async (context, ...args) => {
     });
   } catch (err) {
     console.error("Failed to make strava api request");
+    console.error(err);
     return;
   }
   const data = _.map(_.filter(payload, { type: "Run" }), (a) => {
