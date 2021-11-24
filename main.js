@@ -175,18 +175,23 @@ https://twitch.tv/${config.twitch.channel.name}`
       });
     }
   );
+  const subSubscription = await listener.subscribeToChannelSubscriptionEvents(
+    config.twitch.channel.id,
+    async (e) => {
+      await www.enqueue("alert", {
+        t: "sub",
+        args: { user: e.userDisplayName },
+      });
+    }
+  );
   setTimeout(async () => {
     await www.enqueue("alert", {
       t: "follow",
       args: { user: "darth" },
     });
     await www.enqueue("alert", {
-      t: "follow",
+      t: "sub",
       args: { user: "annie" },
-    });
-    await www.enqueue("alert", {
-      t: "follow",
-      args: { user: "vader" },
     });
   }, 5000);
 };
