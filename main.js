@@ -98,6 +98,7 @@ const run = async () => {
   });
   await chat.connect();
   chat.onMessage(async (channelName, user, message, msg) => {
+    www.enqueue("system", "rupee.mp3");
     if (!message.startsWith(config.prefix)) {
       return;
     }
