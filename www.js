@@ -26,6 +26,8 @@ exports.enqueue = async (type, content) => {
       });
     } else if (type === "voice") {
       io.emit("voice", content);
+    } else if (type === "system") {
+      io.emit("system", content);
     }
   } catch (e) {
     console.log(e);
