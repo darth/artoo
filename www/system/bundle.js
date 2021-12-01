@@ -2,7 +2,7 @@
 "use strict";
 
 var socket = io();
-socket.on("voice", function (msg) {
+socket.on("system", function (msg) {
   var sound = document.createElement("audio");
   sound.id = "sound";
   sound.src = "sounds/" + msg;
