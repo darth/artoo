@@ -131,7 +131,7 @@ const run = async () => {
         if (
           cmd.privileged &&
           !msg.userInfo.isBroadcaster &&
-          msg.userInfo.isMod
+          !msg.userInfo.isMod
         ) {
           chat.say(channelName, "Sorry, you are not authorized.");
         } else {
