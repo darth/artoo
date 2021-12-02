@@ -1,14 +1,13 @@
 const fs = require("fs");
 const yaml = require("js-yaml");
 const Keyv = require("keyv");
-const { ApiClient } = require("twitch");
+const { ApiClient } = require("@twurple/api");
 const {
-  StaticAuthProvider,
+  RefreshingAuthProvider,
   ClientCredentialsAuthProvider,
-} = require("twitch-auth");
-const { ChatClient } = require("twitch-chat-client");
-const { WebHookListener, SimpleAdapter } = require("twitch-webhooks");
-const { EventSubListener, ReverseProxyAdapter } = require("twitch-eventsub");
+} = require("@twurple/auth");
+const { ChatClient } = require("@twurple/chat");
+const { EventSubListener, ReverseProxyAdapter } = require("@twurple/eventsub");
 const TelegramBot = require("node-telegram-bot-api");
 const Strava = require("strava-v3");
 const dayjs = require("dayjs");
@@ -63,10 +62,11 @@ const refreshStrava = async () => {
   );
   config.strava.auth.tokens.access = payload.access_token;
   config.strava.auth.tokens.refresh = payload.refresh_token;
+  writeYaml("config.yaml", config);
   setTimeout(() => {
     refreshStrava();
   }, payload.expires_in * 1000 - 3600 * 1000);
-}
+};
 
 const run = async () => {
   const tg = new TelegramBot(config.telegram.auth, { polling: true });
@@ -76,12 +76,26 @@ const run = async () => {
     client_secret: config.strava.auth.client_secret,
   });
   await refreshStrava();
-  const simpleUserAuth = new StaticAuthProvider(
-    config.twitch.auth.client_id,
+  const simpleUserAuth = new RefreshingAuthProvider(
+    {
+      clientId: config.twitch.auth.client_id,
+      clientSecret: config.twitch.auth.client_secret,
+      onRefresh: async newTokenData => {
+        config.twitch.auth.tokens.user = newTokenData; 
+        writeYaml("config.yaml", config);
+      }
+    },
     config.twitch.auth.tokens.user
   );
-  const simpleBotAuth = new StaticAuthProvider(
-    config.twitch.auth.client_id,
+  const simpleBotAuth = new RefreshingAuthProvider(
+    {
+      clientId: config.twitch.auth.client_id,
+      clientSecret: config.twitch.auth.client_secret,
+      onRefresh: async newTokenData => {
+        config.twitch.auth.tokens.bot = newTokenData; 
+        writeYaml("config.yaml", config);
+      }
+    },
     config.twitch.auth.tokens.bot
   );
   const credAuth = new ClientCredentialsAuthProvider(
@@ -93,7 +107,8 @@ const run = async () => {
   const channel = await clientSimple.helix.channels.getChannelInfo(
     config.twitch.channel.id
   );
-  const chat = new ChatClient(simpleBotAuth, {
+  const chat = new ChatClient({
+    authProvider: simpleBotAuth,
     channels: [config.twitch.channel.name],
   });
   await chat.connect();
@@ -137,15 +152,16 @@ const run = async () => {
       await chat.say(channelName, "Sorry, I don't know such command!");
     }
   });
-  const listener = new EventSubListener(
-    clientCred,
-    new ReverseProxyAdapter({
-      hostName: config.hooks.server.host,
-      pathPrefix: config.hooks.server.prefix,
-      port: config.hooks.server.port,
-      externalPort: config.hooks.server.external_port,
-    })
-  );
+  const listener = new EventSubListener({
+    apiClient: clientCred,
+    adapter: new ReverseProxyAdapter({
+      hostName: config.eventsub.server.host,
+      pathPrefix: config.eventsub.server.prefix,
+      port: config.eventsub.server.port,
+      externalPort: config.eventsub.server.external_port,
+    }),
+    secret: config.eventsub.secret,
+  });
   await listener.listen();
   if (config.telegram.enable) {
     const onlineSubscription = await listener.subscribeToStreamOnlineEvents(
@@ -176,7 +192,7 @@ https://twitch.tv/${config.twitch.channel.name}`
       });
     }
   );
-  const subSubscription = await listener.subscribeToChannelSubscriptionEvents(
+  const subSubscription = await listener.subscribeToChannelSubscriptionMessageEvents(
     config.twitch.channel.id,
     async (e) => {
       await www.enqueue("alert", {
