@@ -27,10 +27,7 @@ module.exports = async (context, ...args) => {
   };
   await context.chat.say(
     context.channel.displayName,
-    "Annie runs!"
-  );
-  await context.chat.say(
-    context.channel.displayName,
+    "Annie runs! " +
     `Today: ${distance(data, "day")} km, ` +
       `Week: ${distance(data, "week")} km, ` +
       `Month: ${distance(data, "month")} km`
