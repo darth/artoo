@@ -5,6 +5,11 @@
   "license": "MIT",
   "dependencies": {
     "@keyv/sqlite": "^2.0.2",
+    "@twurple/api": "~5.1",
+    "@twurple/api-call": "~5.1",
+    "@twurple/auth": "~5.1",
+    "@twurple/chat": "~5.1",
+    "@twurple/eventsub": "~5.1",
     "dayjs": "^1.10.6",
     "js-yaml": "^4.0.0",
     "keyv": "^4.0.3",
@@ -14,11 +19,6 @@
     "run-applescript": "^4.0.0",
     "socket.io": "^3.1.1",
     "strava-v3": "^2.0.9",
-    "@twurple/api": "~5.0",
-    "@twurple/api-call": "~5.0",
-    "@twurple/auth": "~5.0",
-    "@twurple/chat": "~5.0",
-    "@twurple/eventsub": "~5.0",
     "wait-queue": "^1.1.4"
   },
   "author": "Vadim Alimguzhin",
