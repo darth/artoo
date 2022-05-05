@@ -161,6 +161,7 @@ const run = async () => {
       externalPort: config.eventsub.server.external_port,
     }),
     secret: config.eventsub.secret,
+    strictHostCheck: false,
   });
   await listener.listen();
   if (config.telegram.enable) {
@@ -192,12 +193,21 @@ https://twitch.tv/${config.twitch.channel.name}`
       });
     }
   );
-  const subSubscription = await listener.subscribeToChannelSubscriptionMessageEvents(
+  const subSubscription = await listener.subscribeToChannelSubscriptionEvents(
     config.twitch.channel.id,
     async (e) => {
       await www.enqueue("alert", {
         t: "sub",
         args: { user: e.userDisplayName },
+      });
+    }
+  );
+  const resubSubscription = await listener.subscribeToChannelSubscriptionMessageEvents(
+    config.twitch.channel.id,
+    async (e) => {
+      await www.enqueue("alert", {
+        t: "resub",
+        args: { user: e.userDisplayName, duration: e.cumulativeMonths },
       });
     }
   );
