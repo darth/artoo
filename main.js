@@ -211,6 +211,15 @@ https://twitch.tv/${config.twitch.channel.name}`
       });
     }
   );
+  const raidSubscription = await listener.subscribeToChannelRaidEventsTo(
+    config.twitch.channel.id,
+    async (e) => {
+      await www.enqueue("alert", {
+        t: "raid",
+        args: { user: e.raidingBroadcasterDisplayName, viewers: e.viewers },
+      });
+    }
+  );
   setTimeout(async () => {
     await www.enqueue("alert", {
       t: "follow",
