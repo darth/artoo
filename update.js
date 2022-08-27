@@ -1,3 +1,5 @@
+const counter = require("./counter.js");
+
 module.exports = async (context, cmdName, ...args) => {
   const cmd = await context.commands.get(cmdName);
   if (cmd) {
@@ -18,6 +20,7 @@ module.exports = async (context, cmdName, ...args) => {
           cmd.args[1] = num;
         }
       }
+      await counter(context, ...cmd.args);
     }
   }
 };
