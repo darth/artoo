@@ -1,1 +1,6 @@
 node_modules
+commands.db
+config.yaml
+www/voice/sounds/
+www/system/sounds/
+www/alert/sounds/
