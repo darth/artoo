@@ -22,6 +22,7 @@ const handlers = {
   text: require("./text.js"),
   update: require("./update.js"),
   strava: require("./strava.js"),
+  counter: require("./counter.js"),
 };
 
 const readYaml = (path, desc) => {
