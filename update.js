@@ -18,6 +18,7 @@ module.exports = async (context, cmdName, ...args) => {
         const num = parseInt(args[0]);
         if (!Number.isNaN(num)) {
           cmd.args[1] = num;
+          context.commands.set(cmdName, cmd);
         }
       }
       await counter(context, ...cmd.args);
