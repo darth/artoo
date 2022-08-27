@@ -1,4 +1,6 @@
+const pluralize = require("pluralize");
 
 module.exports = async (context, text, num) => {
-  await context.chat.say(context.channel.displayName, `${text}: ${num}`);
+  const numStr = pluralize("time", num);
+  await context.chat.say(context.channel.displayName, `${text} ${numStr}.`);
 };
