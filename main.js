@@ -23,6 +23,7 @@ const handlers = {
   update: require("./update.js"),
   strava: require("./strava.js"),
   counter: require("./counter.js"),
+  pd2_armory: require("./pd2_armory.js"),
 };
 
 const readYaml = (path, desc) => {
