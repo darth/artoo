@@ -186,52 +186,52 @@ https://twitch.tv/${config.twitch.channel.name}`
     );
   }
   await www.listen(config.www);
-  const followSubscription = await listener.subscribeToChannelFollowEvents(
-    config.twitch.channel.id,
-    async (e) => {
-      await www.enqueue("alert", {
-        t: "follow",
-        args: { user: e.userDisplayName },
-      });
-    }
-  );
-  const subSubscription = await listener.subscribeToChannelSubscriptionEvents(
-    config.twitch.channel.id,
-    async (e) => {
-      await www.enqueue("alert", {
-        t: "sub",
-        args: { user: e.userDisplayName },
-      });
-    }
-  );
-  const resubSubscription = await listener.subscribeToChannelSubscriptionMessageEvents(
-    config.twitch.channel.id,
-    async (e) => {
-      await www.enqueue("alert", {
-        t: "resub",
-        args: { user: e.userDisplayName, duration: e.cumulativeMonths },
-      });
-    }
-  );
-  const raidSubscription = await listener.subscribeToChannelRaidEventsTo(
-    config.twitch.channel.id,
-    async (e) => {
-      await www.enqueue("alert", {
-        t: "raid",
-        args: { user: e.raidingBroadcasterDisplayName, viewers: e.viewers },
-      });
-    }
-  );
-  setTimeout(async () => {
-    await www.enqueue("alert", {
-      t: "follow",
-      args: { user: "darth" },
-    });
-    await www.enqueue("alert", {
-      t: "sub",
-      args: { user: "annie" },
-    });
-  }, 5000);
+  // const followSubscription = await listener.subscribeToChannelFollowEvents(
+  //   config.twitch.channel.id,
+  //   async (e) => {
+  //     await www.enqueue("alert", {
+  //       t: "follow",
+  //       args: { user: e.userDisplayName },
+  //     });
+  //   }
+  // );
+  // const subSubscription = await listener.subscribeToChannelSubscriptionEvents(
+  //   config.twitch.channel.id,
+  //   async (e) => {
+  //     await www.enqueue("alert", {
+  //       t: "sub",
+  //       args: { user: e.userDisplayName },
+  //     });
+  //   }
+  // );
+  // const resubSubscription = await listener.subscribeToChannelSubscriptionMessageEvents(
+  //   config.twitch.channel.id,
+  //   async (e) => {
+  //     await www.enqueue("alert", {
+  //       t: "resub",
+  //       args: { user: e.userDisplayName, duration: e.cumulativeMonths },
+  //     });
+  //   }
+  // );
+  // const raidSubscription = await listener.subscribeToChannelRaidEventsTo(
+  //   config.twitch.channel.id,
+  //   async (e) => {
+  //     await www.enqueue("alert", {
+  //       t: "raid",
+  //       args: { user: e.raidingBroadcasterDisplayName, viewers: e.viewers },
+  //     });
+  //   }
+  // );
+  // setTimeout(async () => {
+  //   await www.enqueue("alert", {
+  //     t: "follow",
+  //     args: { user: "darth" },
+  //   });
+  //   await www.enqueue("alert", {
+  //     t: "sub",
+  //     args: { user: "annie" },
+  //   });
+  // }, 5000);
 };
 
 process.on("SIGTERM", () => {
