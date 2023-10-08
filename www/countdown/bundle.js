@@ -1377,7 +1377,7 @@ var _dayjs = _interopRequireDefault(require("dayjs"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var to = (0, _dayjs["default"])('2023-10-08T06:00').toDate();
+var to = (0, _dayjs["default"])('2024-03-17T09:00').toDate();
 (0, _countdown["default"])(function (ts) {
   document.getElementById('countdown').innerHTML = ts.toHTML("strong");
 }, to, _countdown["default"].DAYS | _countdown["default"].HOURS | _countdown["default"].MINUTES);
