@@ -11,6 +11,7 @@ const { EventSubListener, ReverseProxyAdapter } = require("@twurple/eventsub");
 const TelegramBot = require("node-telegram-bot-api");
 const Strava = require("strava-v3");
 const dayjs = require("dayjs");
+const Discord = require("discord.js"); 
 require("dayjs/locale/it");
 
 const www = require("./www.js");
@@ -72,6 +73,9 @@ const refreshStrava = async () => {
 
 const run = async () => {
   const tg = new TelegramBot(config.telegram.auth, { polling: true });
+  const discord = new Discord.Client({ intents: [Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.GuildMessages] });
+  await discord.login(config.discord.auth.token);
+  const discordChannel = await discord.channels.fetch(config.discord.channels.announcements);
   Strava.config({
     access_token: config.strava.auth.tokens.access,
     client_id: config.strava.auth.client_id,
@@ -135,7 +139,7 @@ const run = async () => {
           !msg.userInfo.isBroadcaster &&
           !msg.userInfo.isMod
         ) {
-          chat.say(channelName, "Sorry, you are not authorized.");
+          // chat.say(channelName, "Sorry, you are not authorized.");
         } else {
           await handlers[cmd.handler](
             {
@@ -166,25 +170,27 @@ const run = async () => {
     strictHostCheck: false,
   });
   await listener.listen();
-  if (config.telegram.enable) {
-    const onlineSubscription = await listener.subscribeToStreamOnlineEvents(
-      config.twitch.channel.id,
-      async (e) => {
-        const stream = await clientCred.helix.streams.getStreamByUserId(
-          config.twitch.channel.id
-        );
-        const game = await stream.getGame();
-        await tg.sendMessage(
-          config.telegram.channel,
-          `Annie just went live!
+  const onlineSubscription = await listener.subscribeToStreamOnlineEvents(
+    config.twitch.channel.id,
+    async (e) => {
+      const stream = await clientCred.helix.streams.getStreamByUserId(
+        config.twitch.channel.id
+      );
+      const game = await stream.getGame();
+      const msg = `Annie just went live!
 Description: ${stream.title}
 Category: ${game.name}
 Language: ${stream.language}
 https://twitch.tv/${config.twitch.channel.name}`
+      if (config.telegram.enable) {
+        await tg.sendMessage(
+          config.telegram.channel,
+          msg 
         );
       }
-    );
-  }
+      await discordChannel.send(msg);
+    }
+  );
   await www.listen(config.www);
   // const followSubscription = await listener.subscribeToChannelFollowEvents(
   //   config.twitch.channel.id,

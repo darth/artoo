@@ -12,6 +12,7 @@
     "@twurple/eventsub": "~5.1",
     "countdown": "^2.6.0",
     "dayjs": "^1.10.6",
+    "discord.js": "^14.15.2",
     "js-yaml": "^4.0.0",
     "keyv": "^4.0.3",
     "lodash": "^4.17.21",
